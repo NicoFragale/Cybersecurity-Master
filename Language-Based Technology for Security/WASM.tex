@@ -1,0 +1,105 @@
+\section{Web Assembly}
+
+\subsection{Introduction}
+
+WASM is not a programming language, but a binary format generated from other language like C, C++ or Rust. 
+WASM permit this hig level language to run efficiently and properly.
+It is executed in safe place like browser or other runtime enviroment.
+
+\textbf{It is safe because it runs in isolated sandbox.}
+
+It is used to increase performance in web application as: 
+\begin{enumerate}
+    \item 3D games in Browser; 
+    \item Figma etc\dots
+    \item Editing image/video software online\dots
+    \item Ai, ML, blockchain, criptoghraphy\dots
+    \item Allow to execute C, C++, Rust online;
+    \item It can be used on server.
+\end{enumerate}
+
+\subsection{Key characteristics}
+
+\begin{enumerate}
+    \item Stack-Based (push and pop) \texttt{<->} Does not use registers; \texttt{->} Operations;
+    \item Executabel in web broser \texttt{->} using WebAssembly JavaScript API. \texttt{->} API is the only way to communicate from sandbox to outside;
+    \item Secure \texttt{->} Sandbox and permission denied to access system resources;
+    \item Platform-independent \texttt{->} runs on any device that has WASM runtime.
+\end{enumerate}
+
+\begin{lstlisting}[language=wat]
+    (func $calcola (param $x i32) (result i32)
+        local.get $x
+        local.get $x
+        i32.mul
+        i32.const 2
+        i32.mul
+        i32.const 1
+        i32.add
+    )
+    \end{lstlisting}
+
+Analyze the example: 
+\begin{enumerate}
+    \item \textit{func \$calcola (param \$x i32) (result i32) }:
+        \begin{enumerate}
+            \item \textit{func} it is the key word declaring the function;
+            \item \textit{\$calcola} function's name;
+            \item \textit{param} it is the key word declaring the parameter;
+            \item \textit{\$x} parameter's name;
+            \item \textit{i32} indicates the data-type (32 bit integer);
+            \item \textit{result i32} indicates the result will be a i32 data type.
+            \item \textbf{if \$ is omitted the code will still work.}
+        \end{enumerate}
+    
+    \item \textit{local.get \$x} push X in stack with index 0 (Func Starts wih stack empty);
+    \item \textit{local.get \$x} push X in stack with index 1;
+    \item \textit{i32.mul} pop 0 and 1 mul, then mul them (both x) and push temporary result in index 0; 
+    \item \textit{i32.const 2} push in stack the value 2 as type i32 and index 1;
+    \item \textit{i32.mul} pop 0 and 1, then mul them and push as temporary result as index 0;
+    \item \textit{i32.const 1} add 1 as i32 in index 1 ;
+    \item \textit{i32.add} pop 0 and 1, add index 0 and 1, result is pushed in index 0.
+\end{enumerate}
+
+\subsection{Data-Type}
+
+\begin{enumerate}
+    \item \textbf{i32} integer with or without sign in 32 bit \texttt{->} (from 0 to 4.294.967.295) or (from -2.147.483.648 to 2.147.483.647);
+    \item \textbf{i64} integer with or without sign in 64 bit;
+    \item \textbf{f32} floating poin in 32 bit;
+    \item \textbf{f64} floating point in 64 bit.
+\end{enumerate}
+
+\subsection{Storing Values}
+
+\begin{enumerate}
+    \item Stack \texttt{->} push and pop (for operations) of the parameter and costant;
+    \item Function context \texttt{->} variabale declared inside the function \texttt{->} Example: \textit{local \$temp i32}; \texttt{->}
+    \begin{lstlisting}[language=wat]
+        (func $quadrato (param $x i32) (result i32)
+        (local $temp i32)  
+        local.get $x       
+        local.get $x       
+        i32.mul            
+        local.set $temp    
+        local.get $temp    
+    )
+\end{lstlisting}
+    \item Single global memory \texttt{->} Linear memory to handle complex data structure \texttt{->} Used by many functions to store data in long term or to share data beetween more functions \texttt{->} Example:
+
+    \begin{lstlisting}[language=wat]
+        (global $contatore (mut i32) (i32.const 0))  
+  
+        (func $incrementa (result i32)
+            global.get $contatore   
+            i32.const 1
+            i32.add                 
+            global.set $contatore   
+            global.get $contatore   
+        )
+        \end{lstlisting}
+    \textbf{(mut i32)} mutable variabale type i32 (otherwise immutable during the execution), \textbf{(i32.const 0)} initialized at 0.
+
+\end{enumerate}
+
+
